@@ -89,7 +89,7 @@ This is an example of how to list things you need to use the software and how to
 
 1.  Clone the repo
     ```sh
-    git clone https://github.com/taosdevops/pylibseleniummanagement.git
+    git clone https://github.com/koltenfluckiger/pylibseleniummanagement.git
     ```
 2.  Install PIP package
     ```sh
