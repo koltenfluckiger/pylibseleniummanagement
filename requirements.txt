@@ -1,4 +1,4 @@
 ###### Requirements without Version Specifiers ######
 
 pickle
-selenium
+selenium>=4.16.0
