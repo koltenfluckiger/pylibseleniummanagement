@@ -485,6 +485,23 @@ class DriverClient(object):
             self.check_throw(
                 Error("Failed to find element: {} and click.".format(xpath)))
 
+    def find_and_click_and_wait_for_element(self, xpath: str, element_xpath: str) -> None:
+        try:
+            WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
+                EC.presence_of_element_located((By.XPATH, xpath)))
+            element = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
+                EC.element_to_be_clickable((By.XPATH, xpath)))
+            action = ActionChains(self.driver)
+            action.move_to_element(element)
+            action.click(element)
+            action.perform()
+            WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
+                EC.presence_of_element_located((By.XPATH, element_xpath)))
+
+        except Exception as err:
+            self.check_throw(
+                Error("Failed to find element: {} and click.".format(xpath)))
+
     def find_click_and_send_keys_and_go(self, xpath: str, keys: str, url: str) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(

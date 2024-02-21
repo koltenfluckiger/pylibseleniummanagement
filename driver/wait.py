@@ -1,7 +1,8 @@
 try:
-    from time import sleep
-    from selenium.webdriver.common.action_chains import ActionChains
     import random
+    from time import sleep
+
+    from selenium.webdriver.common.action_chains import ActionChains
 except ImportError as err:
     print("Unable to import: {}".format(err))
     exit()
@@ -126,7 +127,7 @@ class wait_for_html_load_after_click(object):
     def __call__(self, driver):
         try:
             element = driver.find_element(*self.locator)
-            html = driver.find_element_by_xpath('html')
+            self.html_id = driver.find_element_by_xpath('html').id
             if element and self.clicked == False:
                 self.html_id = driver.find_element_by_xpath('html').id
                 element.click()
@@ -256,4 +257,5 @@ class wait_for_keys_verification_with_delay(object):
             else:
                 return False
         except Exception as err:
+            return False
             return False
