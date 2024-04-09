@@ -2,7 +2,10 @@ try:
     import random
     from time import sleep
 
+    import selenium
     from selenium.webdriver.common.action_chains import ActionChains
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import WebDriverWait
 except ImportError as err:
     print("Unable to import: {}".format(err))
     exit()
@@ -20,6 +23,34 @@ class presence_of_all_elements_located_if_not_empty(object):
                 return elements
             else:
                 return True
+        except Exception as err:
+            return True
+
+
+class wait_for_xpath_element_to_be_stale(object):
+    def __init__(self, locator, wait):
+        self.locator = locator
+        self.wait = wait
+
+    def __call__(self, driver):
+        try:
+            element = WebDriverWait(driver, self.wait).until(
+                EC.presence_of_element_located(self.locator))
+            return WebDriverWait(driver, self.wait).until(EC.staleness_of(element))
+        except Exception as err:
+            return False
+
+
+class wait_for_element_to_be_stale(object):
+    def __init__(self, element, wait):
+        self.element = element
+        self.wait = wait
+
+    def __call__(self, driver):
+        try:
+            element = driver.find_element(*self.locator)
+            element.isEnabled()
+            return False
         except Exception as err:
             return True
 
@@ -128,16 +159,12 @@ class wait_for_html_load_after_click(object):
         try:
             element = driver.find_element(*self.locator)
             self.html_id = driver.find_element_by_xpath('html').id
-            if element and self.clicked == False:
-                self.html_id = driver.find_element_by_xpath('html').id
-                element.click()
-                self.clicked = True
-                return False
-            else:
-                if self.html_id != driver.find_element_by_xpath('html').id:
-                    return True
-                else:
-                    return False
+            if not element or self.clicked != False:
+                return self.html_id != driver.find_element_by_xpath('html').id
+            self.html_id = driver.find_element_by_xpath('html').id
+            element.click()
+            self.clicked = True
+            return False
         except Exception as err:
             return True
 
@@ -151,16 +178,12 @@ class wait_for_html_load_after_click_element(object):
 
     def __call__(self, driver):
         try:
-            if self.element and self.clicked == False:
-                self.html_id = driver.find_element_by_xpath('html').id
-                self.element.click()
-                self.clicked = True
-                return False
-            else:
-                if self.html_id != driver.find_element_by_xpath('html').id:
-                    return True
-                else:
-                    return False
+            if not self.element or self.clicked != False:
+                return self.html_id != driver.find_element_by_xpath('html').id
+            self.html_id = driver.find_element_by_xpath('html').id
+            self.element.click()
+            self.clicked = True
+            return False
         except Exception as err:
             return True
 
@@ -177,12 +200,12 @@ class wait_for_load_after_click(object):
             if element and self.clicked == False:
                 element.click()
                 self.clicked = True
-                return False
             else:
                 element.is_enabled()
-                return False
+            return False
         except Exception as err:
             return True
+
 
 class wait_for_element_after_click(object):
 
@@ -197,19 +220,10 @@ class wait_for_element_after_click(object):
             if element and self.clicked == False:
                 element.click()
                 self.clicked = True
-                waited_element = driver.find_element(*self.waited_locator)
-                if waited_element:
-                    return True
-                else:
-                    return False
-            else:
-                waited_element = driver.find_element(*self.waited_locator)
-                if waited_element:
-                    return True
-                else:
-                    return False
+            return bool(waited_element := driver.find_element(*self.waited_locator))
         except Exception as err:
             return True
+
 
 class wait_for_keys_verification(object):
 
@@ -224,10 +238,7 @@ class wait_for_keys_verification(object):
             element.clear()
             element.send_keys(self.keys)
             value = str(element.get_property("value"))
-            if value == self.keys:
-                return True
-            else:
-                return False
+            return value == self.keys
         except Exception as err:
             return False
 
@@ -252,10 +263,6 @@ class wait_for_keys_verification_with_delay(object):
                 action.key_up(key)
                 action.perform()
             value = str(element.get_property("value"))
-            if value == self.keys:
-                return True
-            else:
-                return False
+            return value == self.keys
         except Exception as err:
-            return False
             return False
