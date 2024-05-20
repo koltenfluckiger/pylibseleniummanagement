@@ -29,8 +29,9 @@ try:
 except ImportError as err:
     print(f"Unable to import: {err}")
     exit()
-    
-TEMP_DIR = pathlib.Path(os.getenv("TEMP") or "/tmp").joinpath("pylibseleniummanagement.log").resolve()
+
+TEMP_DIR = pathlib.Path(
+    os.getenv("TEMP") or "/tmp").joinpath("pylibseleniummanagement.log").resolve()
 logging.basicConfig(filename=TEMP_DIR)
 
 
@@ -41,7 +42,8 @@ class Error(Exception):
 
 class DriverClient(object):
 
-    def __init__(self, driver: DriverInterface, poll_time: int = 10, poll_frequency: int = 1, scroll_pause_time: int = 5, debug_mode: bool = False, throw: bool = False, delete_profile: bool = False, close_previous_sessions: bool = False, action_delay: int = 0, disable_bot_detection_flag: bool = False) -> None:
+    def __init__(self, driver: DriverInterface, poll_time: int = 10, poll_frequency: int = 1, scroll_pause_time: int = 5, debug_mode: bool = False, throw: bool = False,
+                 delete_profile: bool = False, close_previous_sessions: bool = False, action_delay: int = 0, disable_bot_detection_flag: bool = False) -> None:
         """
         A client to interact with and manipulate web pages using Selenium.
 
@@ -115,7 +117,7 @@ class DriverClient(object):
         """
         Kill all processes associated with the driver's service.
 
-        This method attempts to terminate all child processes spawned by the driver's service. 
+        This method attempts to terminate all child processes spawned by the driver's service.
         It does not raise exceptions but logs them if they occur.
         """
         with contextlib.suppress(Exception):
@@ -169,10 +171,14 @@ class DriverClient(object):
                     for (var i = 0; i < height; i++) {
                         for (var j = 0; j < width; j++) {
                         var n = ((i * (width * 4)) + (j * 4));
-                        imageData.data[n + 0] = imageData.data[n + 0] + shift.r;
-                        imageData.data[n + 1] = imageData.data[n + 1] + shift.g;
-                        imageData.data[n + 2] = imageData.data[n + 2] + shift.b;
-                        imageData.data[n + 3] = imageData.data[n + 3] + shift.a;
+                        imageData.data[n + \
+                            0] = imageData.data[n + 0] + shift.r;
+                        imageData.data[n + \
+                            1] = imageData.data[n + 1] + shift.g;
+                        imageData.data[n + \
+                            2] = imageData.data[n + 2] + shift.b;
+                        imageData.data[n + \
+                            3] = imageData.data[n + 3] + shift.a;
                         }
                     }
                     context.putImageData(imageData, 0, 0);
@@ -229,30 +235,70 @@ class DriverClient(object):
             self.check_throw(Error(f"ERROR: {err}"))
 
     def quit(self) -> None:
+        """
+        Quits the driver session.
+
+        Raises:
+            Error: If an exception occurs during the driver quitting process.
+        """
         try:
             self.driver.quit()
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def go(self, url: str) -> None:
+        """
+        Navigates the driver to the specified URL.
+
+        Args:
+            url (str): The URL to navigate to.
+
+        Raises:
+            Error: If an exception occurs during the navigation process.
+        """
+
         try:
             self.driver.get(url)
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def reload(self) -> None:
+        """
+        Reloads the current page in the driver session.
+
+        Raises:
+            Error: If an exception occurs during the page reloading process.
+        """
+
         try:
             self.driver.refresh()
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def scroll_to_top(self) -> None:
+        """
+        Refreshes the current page in the driver session.
+
+        Raises:
+            Error: If an exception occurs during the page refreshing process.
+        """
+
         try:
             self.execute_script("window.scrollTo(0, 0);")
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def scroll_to_bottom(self, times: int) -> None:
+        """
+        Scrolls to the bottom of the page a specified number of times.
+
+        Args:
+            times (int): The number of times to scroll to the bottom of the page.
+
+        Raises:
+            Error: If an exception occurs during the scrolling process.
+        """
+
         try:
             browser_height = self.driver.execute_script(
                 "return document.body.scrollHeight")
@@ -269,12 +315,29 @@ class DriverClient(object):
             self.check_throw(Error(f"ERROR: {err}"))
 
     def open_new_tab(self) -> None:
+        """
+        Opens a new tab in the browser.
+
+        Raises:
+            Error: If an exception occurs during the new tab opening process.
+        """
+
         try:
             self.execute_script("window.open();")
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def open_new_tab_go(self, url: str) -> None:
+        """
+        Opens a new tab in the browser and navigates to the specified URL.
+
+        Args:
+            url (str): The URL to navigate to in the new tab.
+
+        Raises:
+            Error: If an exception occurs during the new tab opening or navigation process.
+        """
+
         try:
             self.execute_script(
                 f"var newWindow = window.open(); newWindow.location.href = '{url}'"
@@ -282,28 +345,66 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"Unable to open new tab to {url}"))
 
-
     def get_current_iframe(self):
+        """
+        Returns the name of the current iframe.
+
+        Returns:
+            str: The name of the current iframe.
+
+        Raises:
+            Error: If an exception occurs during the retrieval of the current iframe name.
+        """
+
         try:
             return self.execute_script("self.name")
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def switch_to_iframe(self, iframe: WebElement) -> None:
+        """
+        Switches the driver's focus to the specified iframe element.
+
+        Args:
+            iframe (WebElement): The iframe element to switch focus to.
+
+        Raises:
+            Error: If an exception occurs during the iframe switching process.
+        """
+
         try:
             self.driver.switch_to.frame(iframe)
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
     def switch_to_default_iframe(self) -> None:
+        """
+        Switches the driver's focus back to the default content.
+
+        Raises:
+            Error: If an exception occurs during the switching to default content process.
+        """
+
         try:
             self.driver.switch_to.default_content()
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
-            
+
     ## ELEMENT FUNCTIONS ##
-    
-    def press_modifer_key_send_keys(self, modifer_key: MODIFERKEYS, keys: Any = "") -> None:
+
+    def press_modifer_key_send_keys(
+            self, modifer_key: MODIFERKEYS, keys: Any = "") -> None:
+        """
+        Presses a modifier key while sending keys and then releases the modifier key.
+
+        Args:
+            modifer_key (MODIFERKEYS): The modifier key to press.
+            keys (Any): The keys to send along with the modifier key (default is an empty string).
+
+        Raises:
+            Error: If an exception occurs during the key press and send keys process.
+        """
+
         try:
             action = ActionChains(self.driver)
             action.key_down(modifer_key).send_keys(keys).key_up(modifer_key)
@@ -312,6 +413,16 @@ class DriverClient(object):
             self.check_throw(Error(f"ERROR: {err}"))
 
     def press_modifer_key(self, modifer_key: MODIFERKEYS) -> None:
+        """
+        Presses and releases a modifier key.
+
+        Args:
+            modifer_key (MODIFERKEYS): The modifier key to press and release.
+
+        Raises:
+            Error: If an exception occurs during the modifier key press and release process.
+        """
+
         try:
             action = ActionChains(self.driver)
             action.key_down(modifer_key).key_up(modifer_key)
@@ -319,22 +430,60 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
-    def press_modifer_key_send_keys_on_element(self, element: WebElement, modifer_key: MODIFERKEYS, keys: Any = "") -> None:
+    def press_modifer_key_send_keys_on_element(
+            self, element: WebElement, modifer_key: MODIFERKEYS, keys: Any = "") -> None:
+        """
+        Presses a modifier key while sending keys to a specific element and then releases the modifier key.
+
+        Args:
+            element (WebElement): The element to send keys to.
+            modifer_key (MODIFERKEYS): The modifier key to press.
+            keys (Any): The keys to send along with the modifier key (default is an empty string).
+
+        Raises:
+            Error: If an exception occurs during the key press, send keys, and release process.
+        """
+
         try:
             action = ActionChains(self.driver)
-            action.key_down(modifer_key).send_keys(keys).key_up(modifer_key)
+            action.key_down(modifer_key, element).send_keys(
+                keys, element).key_up(modifer_key, element)
             action.perform()
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
-    def press_modifer_key_on_element(self, element: WebElement,  modifer_key: MODIFERKEYS) -> None:
+    def press_modifer_key_on_element(
+            self, element: WebElement, modifer_key: MODIFERKEYS) -> None:
+        """
+        Presses and releases a modifier key on a specific element.
+
+        Args:
+            element (WebElement): The element on which to press and release the modifier key.
+            modifer_key (MODIFERKEYS): The modifier key to press and release.
+
+        Raises:
+            Error: If an exception occurs during the modifier key press and release process.
+        """
+
         try:
             action = ActionChains(self.driver)
             action.key_down(modifer_key, element).key_up(modifer_key, element)
             action.perform()
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
+
     def get_elements(self, xpath: str) -> WebElement:
+        """
+        Presses and releases a modifier key on a specific element.
+
+        Args:
+            element (WebElement): The element on which to press and release the modifier key.
+            modifer_key (MODIFERKEYS): The modifier key to press and release.
+
+        Raises:
+            Error: If an exception occurs during the modifier key press and release process.
+        """
+
         try:
             return WebDriverWait(
                 self.driver, self.poll_time, poll_frequency=self.poll_frequency
@@ -343,6 +492,19 @@ class DriverClient(object):
             self.check_throw(Error(f"Failed to find elements: {xpath}"))
 
     def get_elements_until_none(self, xpath: str) -> WebElement:
+        """
+        Waits until elements matching the given XPath are present and returns them.
+
+        Args:
+            xpath (str): The XPath expression to locate the elements.
+
+        Returns:
+            Union[List[WebElement], bool]: The list of located WebElements if found, False otherwise.
+
+        Raises:
+            Error: If an exception occurs during the element location process.
+        """
+
         try:
             elements = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 presence_of_all_elements_located_if_not_empty((By.XPATH, xpath)))
@@ -350,7 +512,36 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"Failed to find elements: {xpath}"))
 
+    def get_element_relative(
+            self, parent_element: WebElement, xpath: str) -> WebElement:
+        """
+        Find a child element relative to the given parent element using an XPath.
+
+        Args:
+            parent_element (WebElement): The parent element from which to find the child.
+            xpath (str): The XPath expression to locate the child element.
+
+        Returns:
+            WebElement: The found child element or None if not found.
+        """
+        try:
+            return parent_element.find_element(By.XPATH, xpath)
+        except Exception as err:
+            self.check_throw(
+                Error(f"Failed to find relative element: {xpath}"))
+            return None
+
     def get_element(self, xpath: str) -> WebElement:
+        """
+        Waits until elements matching the given XPath are present.
+
+        Args:
+            xpath (str): The XPath expression to locate the elements.
+
+        Returns:
+            WebElement: The WebElement object representing the located elements.
+        """
+
         try:
             return WebDriverWait(
                 self.driver, self.poll_time, poll_frequency=self.poll_frequency
@@ -359,6 +550,19 @@ class DriverClient(object):
             self.check_throw(Error(f"Failed to find element: {xpath}"))
 
     def try_to_get_element(self, xpath: str) -> WebElement:
+        """
+        Attempts to locate and return an element based on the provided XPath expression.
+
+        Args:
+            xpath (str): The XPath expression to locate the element.
+
+        Returns:
+            WebElement: The located WebElement object.
+
+        Raises:
+            Exception: If an exception occurs during the element location process.
+        """
+
         try:
             return WebDriverWait(
                 self.driver, self.poll_time, poll_frequency=self.poll_frequency
@@ -367,12 +571,36 @@ class DriverClient(object):
             return False
 
     def get_element_by_tag_name(self, tag: str) -> WebElement:
+        """
+        Finds and returns the first element with the specified tag name.
+
+        Args:
+            tag (str): The tag name of the element to find.
+
+        Returns:
+            WebElement: The WebElement object representing the found element.
+        """
+
         try:
             return self.driver.find_element(By.TAG_NAME, tag)
         except Exception as err:
             traceback.print_exc()
 
     def get_child_element(self, element: WebElement, xpath: str) -> WebElement:
+        """
+        Finds a child element within a parent element by XPath and waits for it to be clickable.
+
+        Args:
+            element (WebElement): The parent element to search within.
+            xpath (str): The XPath expression to locate the child element.
+
+        Returns:
+            WebElement: The located child WebElement object.
+
+        Raises:
+            Error: If an exception occurs during the child element location process.
+        """
+
         try:
             c_element = element.find_element(By.XPATH, xpath)
             return WebDriverWait(
@@ -382,6 +610,17 @@ class DriverClient(object):
             self.check_throw(Error(f"Failed to find element: {xpath}"))
 
     def find_and_send_modifer_key(self, xpath: str, key: Any) -> None:
+        """
+        Finds an element by XPath, waits for it to be clickable, and sends keys to it.
+
+        Args:
+            xpath (str): The XPath expression to locate the element.
+            key (Any): The keys to send to the element.
+
+        Raises:
+            Error: If an exception occurs during the element location or key sending process.
+        """
+
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
@@ -393,14 +632,27 @@ class DriverClient(object):
                 Error(f"Failed to find element: {xpath} and send keys: {key}")
             )
 
-    def find_and_send_modifer_key(self, element: WebElement, modifier_key: Any) -> None:
+    def find_and_send_modifer_key(
+            self, element: WebElement, modifier_key: Any) -> None:
+        """
+        Finds an element and sends a modifier key to it.
+
+        Args:
+            element (WebElement): The element to send the modifier key to.
+            modifier_key (Any): The modifier key to send to the element.
+
+        Raises:
+            Error: If an exception occurs during the element location or key sending process.
+        """
+
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located(element))
             element.send_keys(modifier_key)
         except Exception as err:
             self.check_throw(
-                Error(f"Failed to find element: {element} and send keys: {modifier_key}")
+                Error(
+                    f"Failed to find element: {element} and send keys: {modifier_key}")
             )
 
     def send_modifer_key(self, modifier_key) -> None:
@@ -419,7 +671,8 @@ class DriverClient(object):
         except Exception as err:
             traceback.print_exc()
 
-    def find_and_click_send_modifer_key(self, xpath: str, modifer_key: Any, keys: Any) -> None:
+    def find_and_click_send_modifer_key(
+            self, xpath: str, modifer_key: Any, keys: Any) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
@@ -460,7 +713,8 @@ class DriverClient(object):
                 Error(f"Failed to find element: {xpath} and send keys: {keys}")
             )
 
-    def find_and_send_keys_with_delay(self, xpath: str, keys: Any, delay=1) -> None:
+    def find_and_send_keys_with_delay(
+            self, xpath: str, keys: Any, delay=1) -> None:
         """
         Find an element by XPath, send keys with a delay, and verify the keys sent.
 
@@ -515,9 +769,11 @@ class DriverClient(object):
             action.perform()
 
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
-    def find_and_click_and_wait_for_element(self, xpath: str, element_xpath: str) -> None:
+    def find_and_click_and_wait_for_element(
+            self, xpath: str, element_xpath: str) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
@@ -531,9 +787,11 @@ class DriverClient(object):
                 EC.presence_of_element_located((By.XPATH, element_xpath)))
 
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
-    def find_click_and_send_keys_and_go(self, xpath: str, keys: str, url: str) -> None:
+    def find_click_and_send_keys_and_go(
+            self, xpath: str, keys: str, url: str) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
@@ -547,7 +805,8 @@ class DriverClient(object):
             self.driver.go(url)
 
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_element(self, element: WebElement) -> None:
         try:
@@ -557,7 +816,8 @@ class DriverClient(object):
             action.perform()
 
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {element} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {element} and click."))
 
     def try_to_click_element(self, element: WebElement) -> None:
         try:
@@ -568,9 +828,11 @@ class DriverClient(object):
                 action.perform()
 
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {element} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {element} and click."))
 
-    def click_chain_elements_infinitely(self, xpaths: list, pause_time: int = 0) -> None:
+    def click_chain_elements_infinitely(
+            self, xpaths: list, pause_time: int = 0) -> None:
         while True:
             try:
                 for xpath in xpaths:
@@ -584,9 +846,11 @@ class DriverClient(object):
                     action.perform()
                 sleep(pause_time)
             except Exception as err:
-                self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+                self.check_throw(
+                    Error(f"Failed to find element: {xpath} and click."))
 
-    def click_chain_elements(self, xpaths: list, pause_time: int = 0, loop_count: int = 10) -> None:
+    def click_chain_elements(
+            self, xpaths: list, pause_time: int = 0, loop_count: int = 10) -> None:
         try:
             for _ in range(loop_count):
                 for xpath in xpaths:
@@ -600,9 +864,11 @@ class DriverClient(object):
                     action.perform()
                 sleep(pause_time)
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
-    def click_all_elements_and_scroll(self, xpath: str, scroll_count=1) -> None:
+    def click_all_elements_and_scroll(
+            self, xpath: str, scroll_count=1) -> None:
         try:
             elements = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_all_elements_located((By.XPATH, xpath)))
@@ -612,12 +878,14 @@ class DriverClient(object):
                 action = ActionChains(self.driver)
                 action.move_to_element(element)
                 action.click(element)
-                # The above code is calling the `perform()` method on an object named `action`.
+                # The above code is calling the `perform()` method on an object
+                # named `action`.
                 action.perform()
 
             self.scroll_to_bottom(scroll_count)
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_and_wait_for_load(self, xpath: str):
         try:
@@ -627,7 +895,8 @@ class DriverClient(object):
                 wait_for_load_after_click((By.XPATH, xpath)))
         except Exception as err:
             print(err)
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_and_wait_for_element(self, xpath: str, xpath2: str):
         try:
@@ -635,7 +904,8 @@ class DriverClient(object):
                 wait_for_element_after_click((By.XPATH, xpath), (By.XPATH, xpath2)))
         except Exception as err:
             print(err)
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_and_wait_for_html_load(self, xpath: str):
         try:
@@ -645,7 +915,8 @@ class DriverClient(object):
                 wait_for_html_load_after_click((By.XPATH, xpath)))
         except Exception as err:
             print(err)
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_element_and_wait_for_load(self, element: WebElement):
         try:
@@ -663,26 +934,35 @@ class DriverClient(object):
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def wait_to_click_element(self, xpath: str, wait: int = 1) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 wait_element_to_be_clickable((By.XPATH, xpath), wait))
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
-    def wait_for_element_to_disappear_by_xpath(self, xpath: str, wait: int = 1) -> None:
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
+
+    def wait_for_element_to_disappear_by_xpath(
+            self, xpath: str, wait: int = 1) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 wait_for_element_to_be_stale((By.XPATH, xpath), wait))
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
-    def wait_for_element_to_disappear(self, element: str, wait: int = 1) -> None:
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
+
+    def wait_for_element_to_disappear(
+            self, element: str, wait: int = 1) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 wait_for_element_to_be_stale(element, wait))
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {element} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {element} and click."))
+
     def element_exists(self, xpath: str) -> bool:
         try:
             return bool(
@@ -705,7 +985,8 @@ class DriverClient(object):
                 action.click(element)
                 action.perform()
         except Exception as err:
-            self.check_throw(Error(f"Failed to find element: {xpath} and click."))
+            self.check_throw(
+                Error(f"Failed to find element: {xpath} and click."))
 
     def click_all_elements_and_reload(self, xpath: str) -> None:
         try:
@@ -723,9 +1004,9 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(
                 Error("Failed to find element: {} and click.".format(xpath)))
-    
+
     ## FRAME FUNCTIONS ##
-    
+
     def find_frame_switch(self, xpath: str) -> None:
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
@@ -815,7 +1096,8 @@ class DriverClient(object):
             except Exception as err:
                 self.check_throw(Error(f"ERROR: {err}"))
 
-    def check_node_css_property(self, xpath: str, property: str, search: str, value: str, return_value=False) -> Any:
+    def check_node_css_property(
+            self, xpath: str, property: str, search: str, value: str, return_value=False) -> Any:
         try:
             search_str = re.compile(search)
             element = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
@@ -831,7 +1113,8 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
-    def execute_script(self, script: str, return_value=False, node: WebElement = None) -> Any:
+    def execute_script(self, script: str, return_value=False,
+                       node: WebElement = None) -> Any:
         try:
             if return_value:
                 value = self.driver.execute_script(script)
@@ -875,7 +1158,8 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
-    def set_attribute_of_node(self, xpath: str, attribute: str, value: str) -> None:
+    def set_attribute_of_node(
+            self, xpath: str, attribute: str, value: str) -> None:
         try:
             element = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.presence_of_element_located((By.XPATH, xpath)))
@@ -936,7 +1220,8 @@ class DriverClient(object):
         except Exception as err:
             self.check_throw(Error(f"ERROR: {err}"))
 
-    def select_option_from_dropdown(self, xpath: str, select_type: DROPDOWNTYPE, value: Any) -> None:
+    def select_option_from_dropdown(
+            self, xpath: str, select_type: DROPDOWNTYPE, value: Any) -> None:
         try:
             element = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 EC.element_to_be_clickable((By.XPATH, xpath)))

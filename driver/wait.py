@@ -49,7 +49,9 @@ class wait_for_element_to_be_stale(object):
     def __call__(self, driver):
         try:
             element = driver.find_element(*self.locator)
-            element.isEnabled()
+            print(element)
+            element.isDisplayed()
+            print(element.isDisplayed())
             return False
         except Exception as err:
             return True
