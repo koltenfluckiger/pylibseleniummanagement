@@ -485,9 +485,17 @@ class DriverClient(object):
         """
 
         try:
-            return WebDriverWait(
+
+            elements = WebDriverWait(
                 self.driver, self.poll_time, poll_frequency=self.poll_frequency
             ).until(EC.presence_of_all_elements_located((By.XPATH, xpath)))
+
+            for element in elements:
+                print(element)
+                WebDriverWait(
+                    self.driver, self.poll_time, poll_frequency=self.poll_frequency
+                ).until(EC.element_to_be_clickable(element))
+            return elements
         except Exception as err:
             self.check_throw(Error(f"Failed to find elements: {xpath}"))
 
@@ -878,8 +886,6 @@ class DriverClient(object):
                 action = ActionChains(self.driver)
                 action.move_to_element(element)
                 action.click(element)
-                # The above code is calling the `perform()` method on an object
-                # named `action`.
                 action.perform()
 
             self.scroll_to_bottom(scroll_count)
@@ -889,9 +895,7 @@ class DriverClient(object):
 
     def click_and_wait_for_load(self, xpath: str):
         try:
-            WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
-                EC.element_to_be_clickable((By.XPATH, xpath)))
-            WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
+            element = WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 wait_for_load_after_click((By.XPATH, xpath)))
         except Exception as err:
             print(err)
@@ -910,7 +914,7 @@ class DriverClient(object):
     def click_and_wait_for_html_load(self, xpath: str):
         try:
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
-                EC.element_to_be_clickable((By.XPATH, xpath)))
+                wait_for_load_after_click((By.XPATH, xpath)))
             WebDriverWait(self.driver, self.poll_time, poll_frequency=self.poll_frequency).until(
                 wait_for_html_load_after_click((By.XPATH, xpath)))
         except Exception as err:

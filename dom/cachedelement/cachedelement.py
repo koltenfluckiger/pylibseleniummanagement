@@ -2,6 +2,8 @@ import time
 
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class CachedElement:
@@ -12,8 +14,14 @@ class CachedElement:
         self.retry_delay = retry_delay
         self.element = None
 
+    def get_element_dom(self):
+        element = self.driver_client.driver.find_element(
+            By.XPATH, self.locator)
+        print(element)
+        return element
+
     def locate(self):
-        self.element = self.driver_client.get_element(self.locator)
+        self.element = self.get_element_dom()
 
     def get_element(self):
         if not self.element:
@@ -31,8 +39,6 @@ class CachedElement:
                 retries += 1
                 self.element = None  # Clear the cached element
                 time.sleep(self.retry_delay)
-        raise StaleElementReferenceException(
-            f"Element located by {self.locator} is stale after {self.max_retries} retries")
 
     def click(self):
         self.perform_action(lambda elem: elem.click())

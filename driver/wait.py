@@ -203,8 +203,21 @@ class wait_for_load_after_click(object):
                 element.click()
                 self.clicked = True
             else:
-                element.is_enabled()
+                return element.is_enabled()
             return False
+        except Exception as err:
+            return True
+
+
+class wait_for_load_after(object):
+
+    def __init__(self, locator):
+        self.locator = locator
+
+    def __call__(self, driver):
+        try:
+            element = driver.find_element(*self.locator)
+            return not element.is_enabled()
         except Exception as err:
             return True
 
@@ -224,7 +237,7 @@ class wait_for_element_after_click(object):
                 self.clicked = True
             return bool(waited_element := driver.find_element(*self.waited_locator))
         except Exception as err:
-            return True
+            return False
 
 
 class wait_for_keys_verification(object):
